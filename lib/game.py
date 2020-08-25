@@ -1,5 +1,5 @@
-from card_pile import CardDeck
-from card import Card, CardSuit
+from .card_pile import CardDeck
+from .card import Card, CardSuit
 
 class Round:
     '''A single round of the game, ie. one or more hands to be won.'''

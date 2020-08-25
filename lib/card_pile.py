@@ -2,7 +2,7 @@ import random
 
 from typing import List
 
-from card import Card, CardSuit
+from .card import Card, CardSuit
 
 class CardPile:
     '''A generic ordered set of cards (eg. a hand, a deck).'''
