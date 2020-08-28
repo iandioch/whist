@@ -3,15 +3,17 @@ import argparse
 from lib.game import Game, RoundManager, RoundState
 from lib.player import Player
 
-def start_game(args : argparse.Namespace):
+
+def start_game(args: argparse.Namespace):
     print('Playing a game with {} players.'.format(args.num_players))
-    players = [Player('Player {}'.format(i+1)) for i in range(args.num_players)]
+    players = [Player('Player {}'.format(i + 1))
+               for i in range(args.num_players)]
     game = Game(players)
     while True:
-        print('-'*10)
+        print('-' * 10)
         print('New round!')
         print('Shuffling, dealing, thinking...')
-        print('-'*10)
+        print('-' * 10)
         round_manager = RoundManager(game.progress_to_next_round())
         print('Trump card is {}'.format(game.round.trump_card))
         while True:
@@ -23,15 +25,16 @@ def start_game(args : argparse.Namespace):
                     game.round.active_player.identifier))
                 print('\n\nCurrent hand:')
                 playable_cards = game.round.play_pile.get_playable_cards(
-                        game.round.hands[game.round.active_player],
-                        game.round.trump_suit)
+                    game.round.hands[game.round.active_player],
+                    game.round.trump_suit)
                 playable_indexes = set()
                 for i, card in enumerate(game.round.hands[game.round.active_player]):
-                    playable = (card in playable_cards) or (len(game.round.play_pile) == 0)
+                    playable = (card in playable_cards) or (
+                        len(game.round.play_pile) == 0)
                     if playable:
                         playable_indexes.add(i)
                     print('[{}]: {} {}'.format(i, card,
-                        '' if playable else '(not playable)'))
+                                               '' if playable else '(not playable)'))
                 # TODO(iandioch): Render hand, allow some input, etc.
                 choice = None
                 while True:
@@ -55,8 +58,10 @@ def start_game(args : argparse.Namespace):
         # TODO(iandioch): Handle finished game.
         print('Round finished!')
 
+
 def main():
-    parser = argparse.ArgumentParser(description='Play a game of Romanian Whist.')
+    parser = argparse.ArgumentParser(
+        description='Play a game of Romanian Whist.')
     parser.add_argument('--num_players', type=int, help='Number of players.')
     args = parser.parse_args()
 

@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class CardSuit(Enum):
     HEARTS = 1
     CLUBS = 2
@@ -16,7 +17,9 @@ class CardSuit(Enum):
         }
         return names[suit]
 
+
 class Card:
+
     def __init__(self, suit: CardSuit, name: str, value: int):
         self.suit = suit
         self.name = name
@@ -27,7 +30,7 @@ class Card:
 
     def __eq__(self, other):
         return (self.suit == other.suit and self.name == other.name and
-            self.value == other.value)
+                self.value == other.value)
 
     def __str__(self):
         return '{} of {}'.format(self.name, CardSuit.get_suit_name(self.suit))
