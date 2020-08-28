@@ -41,10 +41,6 @@ class Round:
     def deal(self):
         return self.deck.deal(len(self.players), self.size_of_hand)
 
-    def is_finished(self):
-        # TODO(iandioch): remove.
-        return False
-
     def _next_player(self, current_player):
         choose_next_player = False
         for player in self.players:
