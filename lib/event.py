@@ -2,6 +2,7 @@ from enum import Enum, auto
 
 class EventType(Enum):
     NEW_GAME = auto()
+    NEW_ROUND = auto()
     NEW_TRUMP_CARD = auto()
     TURN_CHANGED = auto()
     DEAL = auto()

@@ -19,7 +19,8 @@ class RoundState(Enum):
 
 class Round:
     '''A single round of the game, ie. one or more hands to be won. Mutable'''
-    def __init__(self, deck: CardDeck, players: List[Player], size_of_hand: int, event_log: EventLog):
+    def __init__(self, deck: CardDeck, players: List[Player], size_of_hand: int,
+            event_log: EventLog, starting_player: Player):
         self.event_log = event_log
         self.deck = deck
         self.deck.shuffle()
@@ -27,8 +28,7 @@ class Round:
         self.size_of_hand = size_of_hand
         self.hands_remaining = size_of_hand
 
-        # TODO(iandioch): It shouldn't always start with the first player.
-        self.active_player = players[0]
+        self.active_player = starting_player
         self.hands = {}
         for i, hand in enumerate(self.deal()):
             self.hands[players[i]] = hand
@@ -155,7 +155,14 @@ class Game:
 
     def progress_to_next_round(self):
         self.round_number += 1
+        starting_player = self.players[self.round_number % len(self.players)]
         # TODO(iandioch): Check if game is now finished.
         self.round = Round(self.get_new_deck(), self.players,
-                self.cards_per_round[self.round_number], self.event_log)
+                self.cards_per_round[self.round_number], self.event_log,
+                starting_player)
+        self.event_log.add_event(EventType.NEW_ROUND, data = {
+            'starting_player': starting_player.identifier,
+            'round_number': self.round_number,
+            'num_cards': self.cards_per_round[self.round_number],
+        })
         return self.round
