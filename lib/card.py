@@ -11,3 +11,10 @@ class Card:
         self.suit = suit
         self.name = name
         self.value = value
+
+    def __hash__(self):
+        return hash((self.suit, self.name, self.value))
+
+    def __eq__(self, other):
+        return (self.suit == other.suit and self.name == other.name and
+            self.value == other.value)
