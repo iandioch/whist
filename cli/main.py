@@ -24,6 +24,7 @@ def start_game(args : argparse.Namespace):
                 print('Chose to play {}'.format(choice))
                 card = game.round.hands[game.round.active_player][choice]
                 print(card)
+                round_manager.play_card(card, game.round.active_player)
             elif state == RoundState.HAND_FINISHED:
                 round_manager.finish_hand()
                 print('Hand finished!')

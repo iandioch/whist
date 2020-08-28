@@ -66,8 +66,7 @@ class RoundManager:
         self.state = RoundState.AWAITING_TURN
 
     def finish_hand(self):
-        winner = self.round.play_pile.winning_player(self.round.trump_suit,
-                self.round.base_suit)
+        winner = self.round.play_pile.get_winning_player(self.round.trump_suit)
         self.round.hands_won[winner].append(self.round.play_pile)
         self.round.play_pile = CardPlayPile([])
         self.round.turn = winner
@@ -88,12 +87,12 @@ class RoundManager:
         self.round.play_pile.add_card(card, player)
         if len(self.round.play_pile) == len(self.round.players):
             # All players have put a card in, so this hand is over.
-            self.state = HAND_FINISHED
+            self.state = RoundState.HAND_FINISHED
             return 
         else:
             # It is the next player's turn to put down a card.
-            self.state = AWAITING_TURN
-            self.round.active_player = self.round.progress_to_next_player()
+            self.state = RoundState.AWAITING_TURN
+            self.round.progress_to_next_player()
 
 class Game:
     '''An entire sitting of Whist, comprising of multiple rounds of different

@@ -53,7 +53,7 @@ class CardPlayPile(CardPile):
         self.player_of_card[card] = player
 
     def get_winning_card(self, trump_suit: CardSuit):
-        self.cards.sort(key = lambda c: c.value, reversed=True)
+        self.cards.sort(key = lambda c: c.value, reverse=True)
         for card in self.cards:
             if card.suit is trump_suit:
                 return card
@@ -63,7 +63,7 @@ class CardPlayPile(CardPile):
                 return card
 
     def get_winning_player(self, trump_suit: CardSuit):
-        return self.player_of_card[self.winning_card(trump_suit)]
+        return self.player_of_card[self.get_winning_card(trump_suit)]
 
 
 
