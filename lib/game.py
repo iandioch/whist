@@ -1,6 +1,7 @@
 from .card_pile import CardDeck, CardPlayPile
 from .card import Card, CardSuit
 from .player import Player
+from .event import EventLog, EventType
 
 from collections import defaultdict
 from enum import Enum, auto
@@ -18,7 +19,8 @@ class RoundState(Enum):
 
 class Round:
     '''A single round of the game, ie. one or more hands to be won. Mutable'''
-    def __init__(self, deck: CardDeck, players: List[Player], size_of_hand: int):
+    def __init__(self, deck: CardDeck, players: List[Player], size_of_hand: int, event_log: EventLog):
+        self.event_log = event_log
         self.deck = deck
         self.deck.shuffle()
         self.players = players 
@@ -32,6 +34,9 @@ class Round:
             self.hands[players[i]] = hand
         
         self.trump_card = self.deck.draw()
+        self.event_log.add_event(EventType.NEW_TRUMP_CARD, data = {
+            'card': str(self.trump_card)
+        })
         self.trump_suit = self.trump_card.suit
         self.play_pile = CardPlayPile([])
 
@@ -39,6 +44,10 @@ class Round:
         self.hands_won = defaultdict(list)
 
     def deal(self):
+        self.event_log.add_event(EventType.DEAL, data ={
+            'hand_size': self.size_of_hand,
+            'num_hands': len(self.players)
+        })
         return self.deck.deal(len(self.players), self.size_of_hand)
 
     def _next_player(self, current_player):
@@ -60,16 +69,21 @@ class RoundManager:
     def __init__(self, game_round: Round):
         self.round = game_round
         self.state = RoundState.AWAITING_TURN
+        self.event_log = self.round.event_log
 
     def finish_hand(self):
         winner = self.round.play_pile.get_winning_player(self.round.trump_suit)
         self.round.hands_won[winner].append(self.round.play_pile)
         self.round.play_pile = CardPlayPile([])
         self.round.turn = winner
+        self.event_log.add_event(EventType.HAND_FINISHED, data = {
+            'winner': winner.identifier
+        })
 
         self.round.hands_remaining -= 1
         if self.round.hands_remaining == 0:
             self.state = RoundState.ROUND_FINISHED
+            self.event_log.add_event(EventType.ROUND_FINISHED)
         else:
             self.state = RoundState.AWAITING_TURN
 
@@ -81,6 +95,10 @@ class RoundManager:
         # TODO(iandioch): Check 'card' is a legal move (ie. matches base suit or trump, etc.)
         # TODO(iandioch): Remove 'card' from 'player's hand.
         self.round.play_pile.add_card(card, player)
+        self.event_log.add_event(EventType.CARD_PLAYED, data = {
+            'player': player.identifier,
+            'card': str(card)
+        })
         if len(self.round.play_pile) == len(self.round.players):
             # All players have put a card in, so this hand is over.
             self.state = RoundState.HAND_FINISHED
@@ -101,6 +119,10 @@ class Game:
         self.round_number = -1
         self.cards_per_round = self.count_cards_per_round()
         self.round = None
+        self.event_log = EventLog()
+        self.event_log.add_event(EventType.NEW_GAME, "New game started", data ={
+            'num_players': self.num_players
+        })
 
     def get_new_deck(self):
         # A 2 of any suit shouldn't come up in practice...
@@ -125,5 +147,5 @@ class Game:
         self.round_number += 1
         # TODO(iandioch): Check if game is now finished.
         self.round = Round(self.get_new_deck(), self.players,
-                self.cards_per_round[self.round_number])
+                self.cards_per_round[self.round_number], self.event_log)
         return self.round

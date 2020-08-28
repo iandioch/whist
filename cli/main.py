@@ -8,7 +8,9 @@ def start_game(args : argparse.Namespace):
     players = [Player('Player {}'.format(i+1)) for i in range(args.num_players)]
     game = Game(players)
     while True:
+        print('Shuffling, dealing, thinking...')
         round_manager = RoundManager(game.progress_to_next_round())
+        print('Trump card is {}'.format(game.round.trump_card))
         while True:
             state = round_manager.state
             if state == RoundState.ROUND_FINISHED:
@@ -29,6 +31,7 @@ def start_game(args : argparse.Namespace):
                 round_manager.finish_hand()
                 print('Hand finished!')
         # TODO(iandioch): Handle finished game.
+        print('Round finished!')
 
 def main():
     parser = argparse.ArgumentParser(description='Play a game of Romanian Whist.')
