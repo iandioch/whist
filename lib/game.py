@@ -27,8 +27,10 @@ class Round:
 
         # TODO(iandioch): It shouldn't always start with the first player.
         self.active_player = players[0]
-        self.hands = self.deal()
-
+        self.hands = {}
+        for i, hand in enumerate(self.deal()):
+            self.hands[players[i]] = hand
+        
         self.trump_card = self.deck.draw()
         self.trump_suit = self.trump_card.suit
         self.play_pile = CardPlayPile([])

@@ -15,9 +15,18 @@ class CardPile:
     def __len__(self):
         return len(self.cards)
 
+    def __iter__(self):
+        return iter(self.cards)
+
+    def __getitem__(self, i):
+        return self.cards[i]
+
 class CardHand(CardPile):
     def add_card(self, card: Card):
         self.cards.append(card)
+
+    def __str__(self):
+        return '\n'.join(str(card) for card in self.cards)
 
 class CardDeck(CardPile):
     def deal(self, num_hands, size_of_hand):
@@ -25,6 +34,7 @@ class CardDeck(CardPile):
         for _ in range(size_of_hand):
             for hand in hands:
                 hand.add_card(self.draw())
+        return hands
 
     def draw(self):
         return self.cards.pop()

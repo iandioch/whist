@@ -16,8 +16,14 @@ def start_game(args : argparse.Namespace):
             elif state == RoundState.AWAITING_TURN:
                 print('Awaiting turn from player {}.'.format(
                     game.round.active_player.identifier))
+                print('Current hand:')
+                for i, card in enumerate(game.round.hands[game.round.active_player]):
+                    print('[{}]: {}'.format(i, card))
                 # TODO(iandioch): Render hand, allow some input, etc.
-                turn = input()
+                choice = int(input())
+                print('Chose to play {}'.format(choice))
+                card = game.round.hands[game.round.active_player][choice]
+                print(card)
             elif state == RoundState.HAND_FINISHED:
                 round_manager.finish_hand()
                 print('Hand finished!')
