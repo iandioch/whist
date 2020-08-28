@@ -95,6 +95,11 @@ class RoundManager:
         if player != self.round.active_player:
             raise Exception('It is not {}\'s turn, it is {}\'s.'.format(
                 player.identifier, self.round.active_player.identifier))
+        playable_cards = self.round.play_pile.get_playable_cards(
+                self.round.hands[player], self.round.trump_suit)
+        is_first_player = len(self.round.play_pile) == 0
+        if card not in playable_cards and not is_first_player:
+            raise Exception('This card is not a playable card from this hand')
         # TODO(iandioch): Check 'player' is actually holding 'card'
         # TODO(iandioch): Check 'card' is a legal move (ie. matches base suit or trump, etc.)
         # TODO(iandioch): Remove 'card' from 'player's hand.
@@ -103,6 +108,7 @@ class RoundManager:
             'player': player.identifier,
             'card': str(card)
         })
+        self.round.hands[player].remove_card(card)
         if len(self.round.play_pile) == len(self.round.players):
             # All players have put a card in, so this hand is over.
             self.state = RoundState.HAND_FINISHED

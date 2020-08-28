@@ -25,6 +25,9 @@ class CardHand(CardPile):
     def add_card(self, card: Card):
         self.cards.append(card)
 
+    def remove_card(self, card: Card):
+        self.cards.remove(card)
+
     def __str__(self):
         return '\n'.join(str(card) for card in self.cards)
 
@@ -65,5 +68,16 @@ class CardPlayPile(CardPile):
     def get_winning_player(self, trump_suit: CardSuit):
         return self.player_of_card[self.get_winning_card(trump_suit)]
 
-
-
+    def get_playable_cards(self, hand: CardHand, trump_suit: CardSuit):
+        has_base_suit = False
+        has_trump_suit = False
+        for card in hand:
+            if card.suit is self.base_suit:
+                has_base_suit = True
+            elif card.suit is trump_suit:
+                has_trump_suit = True
+        if has_base_suit:
+            return set(card for card in hand if card.suit is self.base_suit)
+        if has_trump_suit:
+            return set(card for card in hand if card.suit is trump_suit)
+        return set(card for card in hand)

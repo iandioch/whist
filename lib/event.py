@@ -21,5 +21,5 @@ class EventLog:
 
     def add_event(self, event_type: EventType, message: str = None, data = None):
         event = Event(event_type, message, data)
-        print('{}: {} ({})'.format(event.type, event.message, event.data))
+        print(' - {}: {} ({})'.format(event.type, event.message, event.data))
         self.events.append(event)

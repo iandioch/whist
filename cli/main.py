@@ -8,7 +8,10 @@ def start_game(args : argparse.Namespace):
     players = [Player('Player {}'.format(i+1)) for i in range(args.num_players)]
     game = Game(players)
     while True:
+        print('-'*10)
+        print('New round!')
         print('Shuffling, dealing, thinking...')
+        print('-'*10)
         round_manager = RoundManager(game.progress_to_next_round())
         print('Trump card is {}'.format(game.round.trump_card))
         while True:
@@ -16,16 +19,35 @@ def start_game(args : argparse.Namespace):
             if state == RoundState.ROUND_FINISHED:
                 break
             elif state == RoundState.AWAITING_TURN:
-                print('Awaiting turn from player {}.'.format(
+                print('\nAwaiting turn from player {}.'.format(
                     game.round.active_player.identifier))
-                print('Current hand:')
+                print('\n\nCurrent hand:')
+                playable_cards = game.round.play_pile.get_playable_cards(
+                        game.round.hands[game.round.active_player],
+                        game.round.trump_suit)
+                playable_indexes = set()
                 for i, card in enumerate(game.round.hands[game.round.active_player]):
-                    print('[{}]: {}'.format(i, card))
+                    playable = (card in playable_cards) or (len(game.round.play_pile) == 0)
+                    if playable:
+                        playable_indexes.add(i)
+                    print('[{}]: {} {}'.format(i, card,
+                        '' if playable else '(not playable)'))
                 # TODO(iandioch): Render hand, allow some input, etc.
-                choice = int(input())
-                print('Chose to play {}'.format(choice))
+                choice = None
+                while True:
+                    choice_str = input('Choose a card index: ')
+                    try:
+                        choice = int(choice_str)
+                    except Exception as e:
+                        print(e)
+                        print('Please choose a valid card index.')
+                        continue
+                    if choice not in playable_indexes:
+                        print('Please choose a valid card index.')
+                    else:
+                        break
                 card = game.round.hands[game.round.active_player][choice]
-                print(card)
+                print('Chose to play: {}'.format(card))
                 round_manager.play_card(card, game.round.active_player)
             elif state == RoundState.HAND_FINISHED:
                 round_manager.finish_hand()
