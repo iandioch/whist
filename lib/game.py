@@ -62,7 +62,11 @@ class Round:
         return self.players[0]
 
     def progress_to_next_player(self):
-        self.active_player = self._next_player(self.active_player)
+        next_player = self._next_player(self.active_player)
+        self.event_log.add_event(EventType.TURN_CHANGED, data = {
+            'new_active_player': next_player.identifier
+        })
+        self.active_player = next_player
 
 class RoundManager:
     '''Handles game events, actions, etc. in a round.'''
