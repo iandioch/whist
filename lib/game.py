@@ -100,9 +100,6 @@ class RoundManager:
         is_first_player = len(self.round.play_pile) == 0
         if card not in playable_cards and not is_first_player:
             raise Exception('This card is not a playable card from this hand')
-        # TODO(iandioch): Check 'player' is actually holding 'card'
-        # TODO(iandioch): Check 'card' is a legal move (ie. matches base suit or trump, etc.)
-        # TODO(iandioch): Remove 'card' from 'player's hand.
         self.round.play_pile.add_card(card, player)
         self.event_log.add_event(EventType.CARD_PLAYED, data = {
             'player': player.identifier,
