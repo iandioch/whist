@@ -126,8 +126,6 @@ class Game:
                 ([1]*self.num_players))
 
     def progress_to_next_round(self):
-        if self.round is not None and not self.round.is_finished():
-            raise Exception("Tried to progress to new round, but previous round still active.")
         self.round_number += 1
         # TODO(iandioch): Check if game is now finished.
         self.round = Round(self.get_new_deck(), self.players,
