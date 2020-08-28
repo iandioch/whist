@@ -5,6 +5,7 @@ from lib.game import Game
 def start_game(args : argparse.Namespace):
     print('Playing a game with {} players.'.format(args.num_players))
     game = Game(args.num_players)
+    game.progress_to_next_round()
 
 def main():
     parser = argparse.ArgumentParser(description='Play a game of Romanian Whist.')

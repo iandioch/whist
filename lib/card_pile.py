@@ -23,5 +23,5 @@ class CardDeck(CardPile):
             for hand in hands:
                 hand.add_card(self.draw_card())
 
-    def draw_card(self):
+    def draw(self):
         return self.cards.pop()
