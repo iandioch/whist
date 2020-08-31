@@ -131,8 +131,14 @@ class RoundManager:
         if player != self.round.active_player:
             raise Exception('It is not {}\'s turn, it is {}\'s.'.format(
                 player.identifier, self.round.active_player.identifier))
-        # TODO(iandioch): Verify 'bid' is a legal bid (<= number of hands in the
-        # round, total of all bids != number of hands).
+        if bid < 0 or bid > self.round.size_of_hand:
+            raise Exception('Bid {} is out of bounds'.format(bid))
+        is_last_bidder = (len(self.round.bids) + 1 == len(self.round.players))
+        current_bid_total = sum(self.round.bids.values())
+        bid_total_after = current_bid_total + bid
+        if is_last_bidder and bid_total_after == self.round.size_of_hand:
+            raise Exception(
+                    'Sum of all bids cannot be equal to number of hands')
         self.round.bids[player] = bid
         self.event_log.add_event(EventType.BID_MADE, data={
             'player': player.identifier,

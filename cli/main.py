@@ -78,12 +78,12 @@ def start_game(args: argparse.Namespace):
                     bid_str = input('Make a bid: ')
                     try:
                         bid = int(bid_str)
+                        round_manager.make_bid(game.round.active_player, bid)
+                        break
                     except Exception as e:
                         print(e)
                         print('Please choose a valid bid.')
                         continue
-                    break
-                round_manager.make_bid(game.round.active_player, bid)
         # TODO(iandioch): Handle finished game.
         print('Round finished!')
 
