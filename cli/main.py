@@ -3,6 +3,9 @@ import argparse
 from lib.game import Game, RoundManager, RoundState
 from lib.player import Player
 
+def debug_log(s):
+    print('- [CLI] {}'.format(s))
+
 
 def start_game(args: argparse.Namespace):
     print('Playing a game with {} players.'.format(args.num_players))
@@ -19,8 +22,10 @@ def start_game(args: argparse.Namespace):
         while True:
             state = round_manager.state
             if state == RoundState.ROUND_FINISHED:
+                debug_log('ROUND_FINISHED')
                 break
             elif state == RoundState.AWAITING_TURN:
+                debug_log('AWAITING_TURN')
                 print('\nAwaiting turn from player {}.'.format(
                     game.round.active_player.identifier))
                 print('\n\nCurrent hand:')
@@ -53,6 +58,7 @@ def start_game(args: argparse.Namespace):
                 print('Chose to play: {}'.format(card))
                 round_manager.play_card(card, game.round.active_player)
             elif state == RoundState.HAND_FINISHED:
+                debug_log('HAND_FINISHED')
                 round_manager.finish_hand()
                 print('Hand finished!')
         # TODO(iandioch): Handle finished game.

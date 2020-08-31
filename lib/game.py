@@ -83,18 +83,22 @@ class RoundManager:
     def finish_hand(self):
         winner = self.round.play_pile.get_winning_player(self.round.trump_suit)
         self.round.hands_won[winner].append(self.round.play_pile)
-        self.round.play_pile = CardPlayPile([])
-        self.round.turn = winner
         self.event_log.add_event(EventType.HAND_FINISHED, data={
             'winner': winner.identifier
+        })
+
+        # Reset the play pile to an empty one, and make it the winner's turn.
+        self.round.play_pile = CardPlayPile([])
+        self.round.active_player = winner
+        self.state = RoundState.AWAITING_TURN
+        self.event_log.add_event(EventType.TURN_CHANGED, data={
+            'new_active_player': winner.identifier
         })
 
         self.round.hands_remaining -= 1
         if self.round.hands_remaining == 0:
             self.state = RoundState.ROUND_FINISHED
             self.event_log.add_event(EventType.ROUND_FINISHED)
-        else:
-            self.state = RoundState.AWAITING_TURN
 
     def play_card(self, card, player):
         if player != self.round.active_player:
