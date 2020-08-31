@@ -10,6 +10,7 @@ class EventType(Enum):
     CARD_PLAYED = auto()
     HAND_FINISHED = auto()
     ROUND_FINISHED = auto()
+    BID_MADE = auto()
 
 
 class Event:

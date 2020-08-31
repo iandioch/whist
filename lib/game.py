@@ -9,7 +9,9 @@ from typing import List
 
 
 class RoundState(Enum):
-    # TODO(iandioch): Add AWAITING_BID
+    # Waiting for round.active_player to make a bid for the number of hands they
+    # will win.
+    AWAITING_BID = auto()
     # Waiting for round.active_player to put a card down.
     AWAITING_TURN = auto()
     # All players have put down a card, should call
@@ -45,6 +47,7 @@ class Round:
 
         # Contains the mapping Player:List[CardPlayPile]
         self.hands_won = defaultdict(list)
+        self.bids = defaultdict(int)
 
     def deal(self):
         self.event_log.add_event(EventType.DEAL, data={
@@ -77,7 +80,7 @@ class RoundManager:
 
     def __init__(self, game_round: Round):
         self.round = game_round
-        self.state = RoundState.AWAITING_TURN
+        self.state = RoundState.AWAITING_BID
         self.event_log = self.round.event_log
 
     def finish_hand(self):
@@ -123,6 +126,22 @@ class RoundManager:
             # It is the next player's turn to put down a card.
             self.state = RoundState.AWAITING_TURN
             self.round.progress_to_next_player()
+
+    def make_bid(self, player, bid):
+        if player != self.round.active_player:
+            raise Exception('It is not {}\'s turn, it is {}\'s.'.format(
+                player.identifier, self.round.active_player.identifier))
+        # TODO(iandioch): Verify 'bid' is a legal bid (<= number of hands in the
+        # round, total of all bids != number of hands).
+        self.round.bids[player] = bid
+        self.event_log.add_event(EventType.BID_MADE, data={
+            'player': player.identifier,
+            'bid': bid
+        })
+        self.round.progress_to_next_player()
+        if len(self.round.bids) == len(self.round.players):
+            self.state = RoundState.AWAITING_TURN
+
 
 
 class Game:
