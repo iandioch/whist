@@ -1,5 +1,6 @@
 import argparse
 
+from cli.listener import Listener
 from lib.game import Game, RoundManager, RoundState
 from lib.player import Player
 
@@ -19,6 +20,7 @@ def print_active_hand(game):
             playable_indexes.add(i)
         print('[{}]: {} {}'.format(i, card,
                                    '' if playable else '(not playable)'))
+    return playable_indexes
 
 
 
@@ -27,6 +29,8 @@ def start_game(args: argparse.Namespace):
     players = [Player('Player {}'.format(i + 1))
                for i in range(args.num_players)]
     game = Game(players)
+    listener = Listener()
+    game.event_log.add_event_listener(listener)
     while True:
         print('-' * 10)
         print('New round!')
@@ -44,7 +48,7 @@ def start_game(args: argparse.Namespace):
                 print('\nAwaiting turn from player {}.'.format(
                     game.round.active_player.identifier))
 
-                print_active_hand(game)
+                playable_indexes = print_active_hand(game)
 
                 choice = None
                 while True:
